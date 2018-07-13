@@ -1,23 +1,33 @@
+from types import FunctionType
+
 from .task import TaskRunner
 
 
 class TaskConfig(object):
 
     def __init__(self, config):
-        self.key = 'AKIAIASBFLLJI7A233RA'
-        self.secret = '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'
+        # must be us-west-2 or us-east-2
+        # TODO validate
+        self.aws_region = 'us-west-2'
+        self.aws_key = 'AKIAJ4VSALDNC4LJ26CQ'
+        self.aws_secret = '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'
+
         self.domain = config['domain']
 
         # initialize tasks
         self.tasks = []
         prev_task = None
         for idx, t in enumerate(config['tasks']):
-            task = self.parse_tasks(t, idx, in_queue_names=prev_task.out_queue_names if prev_task else [])
+            task = self.parse_tasks(
+                t, idx,
+                in_queue_names=prev_task.out_queue_names if prev_task else [],
+                final=idx == len(config['tasks']) - 1
+            )
             self.tasks.append(task)
             prev_task = task
 
-    def parse_tasks(self, task, idx, in_queue_names=None):
-        if type(task) == function:
+    def parse_tasks(self, task, idx, in_queue_names=None, final=False):
+        if type(task) == FunctionType:
             task = {
                 'fn': task,
             }
@@ -29,10 +39,12 @@ class TaskConfig(object):
             in_queue_names=in_queue_names,
             workers=task.get('workers', 1),
             aws_config={
-                'key': self.key,
-                'secret': self.secret,
+                'region': self.aws_region,
+                'key': self.aws_key,
+                'secret': self.aws_secret,
             },
             priorities=task.get('priorities', 0),
+            final=final
         )
 
     def get_task_by_name(self, task_name):
@@ -41,7 +53,10 @@ class TaskConfig(object):
 
         return [t for t in self.tasks if t.name == task_name][0]
 
-    def run(self, task_name, args):
+    def run(self, task_name, args=None, priority=0, iterate=False):
+        if args is None:
+            args = ()
+
         # find task
         task = self.get_task_by_name(task_name)
 
@@ -49,4 +64,4 @@ class TaskConfig(object):
         task.setup()
 
         # run the task
-        task.run(args)
+        return task.run(args, priority=priority, iterate=iterate)
