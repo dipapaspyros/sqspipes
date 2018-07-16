@@ -5,12 +5,12 @@ from .task import TaskRunner
 
 class TaskConfig(object):
 
-    def __init__(self, config):
+    def __init__(self, config, aws_key, aws_secret, aws_region):
         # must be us-west-2 or us-east-2
         # TODO validate
-        self.aws_region = 'us-west-2'
-        self.aws_key = 'AKIAJ4VSALDNC4LJ26CQ'
-        self.aws_secret = '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'
+        self.aws_region = aws_region
+        self.aws_key = aws_key
+        self.aws_secret = aws_secret
 
         self.domain = config['domain']
 

@@ -3,6 +3,7 @@ import random
 import string
 
 from pypipes.task_config import TaskConfig
+from pypipes.tests_env import *
 
 
 def _generate(max_size):
@@ -28,7 +29,7 @@ def _count(data):
 config = TaskConfig({
     'domain': 'word-counter',
     'tasks': [_generate, {'fn': _reduce, 'workers': 2}, _count],
-})
+}, aws_key=AWS_KEY, aws_secret=AWS_SECRET, aws_region=AWS_REGION)
 
 
 def generate():
