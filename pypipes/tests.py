@@ -2,7 +2,7 @@ import sys
 import random
 import string
 
-from pypipes.task_config import TaskConfig
+from pypipes.task_client import TaskClient
 from pypipes.tests_env import *
 
 
@@ -26,24 +26,27 @@ def _count(data):
     return value, len(vowels)
 
 
-config = TaskConfig({
-    'domain': 'word-counter',
-    'tasks': [_generate, {'fn': _reduce, 'workers': 2}, _count],
-}, aws_key=AWS_KEY, aws_secret=AWS_SECRET, aws_region=AWS_REGION)
+client = TaskClient(domain='word-counter', aws_key=AWS_KEY, aws_secret=AWS_SECRET, aws_region=AWS_REGION)
+
+client.register_tasks([
+    {'method': _generate, 'workers': 32, 'interval': 0},
+    {'method': _reduce, 'workers': 32},
+    {'method': _count, 'workers': 16}
+])
 
 
 def generate():
-    for res in config.run(0, args=(10, ), iterate=True):
+    for res in client.run(0, args=(10, ), iterate=True):
         print(res)
 
 
 def reduce():
-    for res in config.run(1, iterate=True):
+    for res in client.run(1, iterate=True):
         print('%s -> %s' % res)
 
 
 def count():
-    for result in config.run(2, iterate=True):
+    for result in client.run(2, iterate=True):
         print('%s -> %d' % result)
 
 

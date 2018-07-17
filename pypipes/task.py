@@ -13,7 +13,7 @@ from .utils.task_pool import TaskPool
 
 class TaskRunner(object):
 
-    def __init__(self, fn, in_queue_names, domain, name, aws_config, workers=1, priorities=0, interval=2, final=False):
+    def __init__(self, fn, in_queue_names, domain, name, aws_config, workers=1, priorities=0, interval=0, final=False):
         self.fn = fn
         self.domain = domain
         self.name = name
@@ -140,9 +140,7 @@ class TaskRunner(object):
             # receive messages
             messages = []
             for in_queue in in_queues:
-                messages += in_queue.receive_messages()
-                if len(messages) >= self.workers:
-                    break
+                messages += in_queue.receive_messages(MaxNumberOfMessages=min(self.workers, 10))
 
             if not in_queues:
                 pool.run_task(self.fn, args, meta={
