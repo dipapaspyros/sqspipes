@@ -8,7 +8,7 @@ import boto3
 from botocore.errorfactory import ClientError
 from multiprocessing import Lock
 
-from .utils.task_pool import TaskPool
+from .utils.task_pool import TaskPool, TaskError
 
 
 class TaskRunner(object):
@@ -113,7 +113,7 @@ class TaskRunner(object):
         self._result_mutex.acquire()
         self.results.append(task_output)
 
-        if not self.final:
+        if (not self.final) and (type(task_output) != TaskError):
             # also write to queues for next task to pick up
             try:
                 self.out_queues[task_meta['priority']].send_message(
@@ -163,8 +163,21 @@ class TaskRunner(object):
             # yield any available results
             if self.results:
                 self._result_mutex.acquire()
+
+                _error = None
                 for result in self.results:
-                    yield result
+                    if type(result) == TaskError:
+
+                        # TODO add again to input queue
+                        for payload in pool.running_payloads():
+                            print('\t%s' % payload)
+
+                        _error = result.error
+                    else:
+                        yield result
+
+                if _error:
+                    raise _error
 
                 self.results = []
                 self._result_mutex.release()
