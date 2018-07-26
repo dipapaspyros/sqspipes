@@ -1,3 +1,5 @@
 .idea/*
+dist
 *.pyc
+MANIFEST
 tests_env.py
