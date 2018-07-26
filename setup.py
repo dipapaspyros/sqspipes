@@ -1,18 +1,13 @@
 from distutils.core import setup
 
-try:
-    import pypandoc
-
-    long_description = pypandoc.convert('README.md', 'rst')
-except(IOError, ImportError):
-    long_description = open('README.md').read()
+long_description = open('README.md').read()
 
 setup(
     # Application name
     name="sqspipes",
 
     # Version number
-    version="0.0.4",
+    version="0.0.5",
 
     # Application author details
     author="Dimitris Papaspyros",
