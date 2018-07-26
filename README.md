@@ -10,7 +10,7 @@ A multi-worker pipe mechanism that uses AWS SQS.
 2. Create a client
 
     ```python
-    from sqspipes.client import TaskClient
+    from sqspipes import TaskClient
     client = TaskClient(domain='my-app', aws_key='YOUR_AWS_KEY', aws_secret='YOUR_AWS_SECRET', aws_region='us-west-2')
     ```
 

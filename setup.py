@@ -11,7 +11,7 @@ setup(
     name="sqspipes",
 
     # Version number
-    version="0.0.7",
+    version="0.0.8",
 
     # Application author details
     author="Dimitris Papaspyros",

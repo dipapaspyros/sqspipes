@@ -12,7 +12,7 @@ Instructions
 
    .. code:: python
 
-      from sqspipes.client import TaskClient
+      from sqspipes import TaskClient
       client = TaskClient(domain='my-app', aws_key='YOUR_AWS_KEY', aws_secret='YOUR_AWS_SECRET', aws_region='us-west-2')
 
    Make sure that the ``aws_key`` provided has full access to the SQS
