@@ -1,16 +1,16 @@
-# pypipes
+# sqspipes
 
 A multi-worker pipe mechanism that uses AWS SQS.
 
 ## Instructions
 
 1. Install the latest version of the package:
-    `pip install pypipes`
+    `pip install sqspipes`
 
 2. Create a client
 
     ```python
-    from pypipes.client import TaskClient
+    from sqspipes.client import TaskClient
     client = TaskClient(domain='my-app', aws_key='YOUR_AWS_KEY', aws_secret='YOUR_AWS_SECRET', aws_region='us-west-2')
     ```
 
