@@ -8,7 +8,7 @@ setup(
     name="sqspipes",
 
     # Version number
-    version="0.0.2",
+    version="0.0.3",
 
     # Application author details
     author="Dimitris Papaspyros",
@@ -25,6 +25,7 @@ setup(
     license="LICENSE",
     description="A multi-worker pipe mechanism that uses AWS SQS",
     long_description=readme,
+    long_description_content_type='text/markdown',
 
     # Dependent packages (distributions)
     install_requires=[
