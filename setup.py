@@ -1,13 +1,17 @@
 from distutils.core import setup
 
-long_description = open('README.rst').read()
+try:
+    long_description = open('README.rst').read()
+except IOError:
+    long_description = ''
+
 
 setup(
     # Application name
     name="sqspipes",
 
     # Version number
-    version="0.0.6",
+    version="0.0.7",
 
     # Application author details
     author="Dimitris Papaspyros",
