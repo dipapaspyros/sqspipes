@@ -1,6 +1,5 @@
 # pypipes
 
-## Purpose
 A multi-worker pipe mechanism that uses AWS SQS.
 
 ## Instructions
@@ -10,8 +9,10 @@ A multi-worker pipe mechanism that uses AWS SQS.
 
 2. Create a client
 
-    `from pypipes.client import TaskClient`
-    `client = TaskClient(domain='my-app', aws_key='YOUR_AWS_KEY', aws_secret='YOUR_AWS_SECRET', aws_region='us-west-2')`
+    ```python
+    from pypipes.client import TaskClient
+    client = TaskClient(domain='my-app', aws_key='YOUR_AWS_KEY', aws_secret='YOUR_AWS_SECRET', aws_region='us-west-2')
+    ```
 
     Make sure that the `aws_key` provided has full access to the SQS service,
     since it needs to be able to create & delete queues.
