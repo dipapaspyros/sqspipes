@@ -147,7 +147,13 @@ class TaskRunner(object):
                     'priority': priority
                 })
 
-                time.sleep(self.interval)
+                # interval could either be a function or a number
+                if type(self.interval) == callable:
+                    _interval = self.interval()
+                else:
+                    _interval = self.interval
+
+                time.sleep(_interval)
 
             elif messages:
                 # get payloads from messages & delete them from sqs

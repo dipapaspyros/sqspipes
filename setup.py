@@ -2,10 +2,10 @@ from distutils.core import setup
 
 setup(
     # Application name
-    name="orfium_earnings_dashboard_sdk",
+    name="pypipes",
 
     # Version number
-    version="0.3.1",
+    version="0.0.1",
 
     # Application author details
     author="Dimitris Papaspyros",
@@ -20,7 +20,7 @@ setup(
     # Details
     url="https://github.com/dipapaspyros/pypipes",
     license="LICENSE",
-    description="A pipe mechanism for python tasks that uses AWS SQS",
+    description="A multi-worker pipe mechanism that uses AWS SQS",
 
     # Dependent packages (distributions)
     install_requires=[

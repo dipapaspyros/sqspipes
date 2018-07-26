@@ -1,10 +1,17 @@
+import os
 import sys
 import random
 import string
 import time
 
 from pypipes.task_client import TaskClient
-from pypipes.tests_env import *
+
+try:
+    AWS_KEY = os.environ['AWS_KEY']
+    AWS_SECRET = os.environ['AWS_SECRET']
+    AWS_REGION = os.environ.get('AWS_REGION', 'us-west-2')
+except KeyError:
+    from pypipes.tests_env import *
 
 
 def _generate(max_size):
@@ -15,8 +22,6 @@ def _generate(max_size):
 
 def _reduce(value, keep='vowels'):
     time.sleep(random.random() * 20)
-
-    raise ValueError(value)
 
     vowels = ['a', 'e', 'i', 'o', 'u', ]
     if keep == 'vowels':
