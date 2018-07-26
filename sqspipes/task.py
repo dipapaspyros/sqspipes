@@ -48,6 +48,9 @@ class TaskRunner(object):
 
         return self._out_queue_names
 
+    def set_workers(self, workers):
+        self.workers = workers
+
     def in_queues(self):
         # no input queues?
         if not self.in_queue_names:
@@ -173,10 +176,6 @@ class TaskRunner(object):
                 _error = None
                 for result in self.results:
                     if type(result) == TaskError:
-
-                        # TODO add again to input queue
-                        for payload in pool.running_payloads():
-                            print('\t%s' % payload)
 
                         _error = result.error
                     else:
