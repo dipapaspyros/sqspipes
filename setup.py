@@ -1,14 +1,18 @@
 from distutils.core import setup
 
-with open('README.md') as readme_file:
-    readme = readme_file.read()
+try:
+    import pypandoc
+
+    long_description = pypandoc.convert('README.md', 'rst')
+except(IOError, ImportError):
+    long_description = open('README.md').read()
 
 setup(
     # Application name
     name="sqspipes",
 
     # Version number
-    version="0.0.3",
+    version="0.0.4",
 
     # Application author details
     author="Dimitris Papaspyros",
@@ -24,8 +28,7 @@ setup(
     url="https://github.com/dipapaspyros/sqspipes",
     license="LICENSE",
     description="A multi-worker pipe mechanism that uses AWS SQS",
-    long_description=readme,
-    long_description_content_type='text/markdown',
+    long_description=long_description,
 
     # Dependent packages (distributions)
     install_requires=[
