@@ -4,14 +4,14 @@ import random
 import string
 import time
 
-from pypipes.task_client import TaskClient
+from sqspipes.task_client import TaskClient
 
 try:
     AWS_KEY = os.environ['AWS_KEY']
     AWS_SECRET = os.environ['AWS_SECRET']
     AWS_REGION = os.environ.get('AWS_REGION', 'us-west-2')
 except KeyError:
-    from pypipes.tests_env import *
+    from sqspipes.tests_env import *
 
 
 def _generate(max_size):

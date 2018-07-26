@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     # Application name
-    name="pypipes",
+    name="sqspipes",
 
     # Version number
     version="0.0.1",
@@ -12,7 +12,7 @@ setup(
     author_email="dimitris@orfium.com",
 
     # Packages
-    packages=["pypipes"],
+    packages=["sqspipes", "sqspipes/utils"],
 
     # Include additional files into the package
     include_package_data=True,
@@ -24,6 +24,7 @@ setup(
 
     # Dependent packages (distributions)
     install_requires=[
-        'boto3'
+        'boto3',
+        'botocore',
     ],
 )
