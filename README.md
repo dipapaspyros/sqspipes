@@ -31,8 +31,6 @@ A multi-worker pipe mechanism that uses AWS SQS.
     import time
 
     def _generate(max_size):
-        time.sleep(random.random())
-
         return ''.join(random.choice(string.ascii_lowercase) for _ in range(random.randint(1, max_size)))
 
 
@@ -45,8 +43,6 @@ A multi-worker pipe mechanism that uses AWS SQS.
 
 
     def _count(data):
-        time.sleep(random.random())
-
         value, vowels = data
 
         return value, len(vowels)
@@ -75,7 +71,7 @@ A multi-worker pipe mechanism that uses AWS SQS.
 
     ```python
     client.register_tasks([
-        {'method': _generate, 'workers': 32, 'interval': 5},
+        {'method': _generate, 'workers': 32, 'interval': 0.1},
         {'method': _reduce, 'workers': 2},
         {'method': _count, 'workers': 16}
     ])
