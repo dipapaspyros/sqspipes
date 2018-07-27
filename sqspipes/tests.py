@@ -43,28 +43,33 @@ client.register_tasks([
 ])
 
 
-def generate():
-    for res in client.run('_generate', args=(10, ), iterate=True):
+def generate(workers):
+    for res in client.run('_generate', args=(10, ), iterate=True, workers=workers):
         print(res)
 
 
-def reduce():
-    for res in client.run('_reduce', iterate=True):
+def reduce(workers):
+    for res in client.run('_reduce', iterate=True, workers=workers):
         print('%s -> %s' % res)
 
 
-def count():
-    for result in client.run('_count', iterate=True):
+def count(workers):
+    for result in client.run('_count', iterate=True, workers=workers):
         print('%s -> %d' % result)
 
 
 try:
+    n_workers = int(sys.argv[2])
+except ValueError:
+    n_workers = None
+
+try:
     if sys.argv[1] == 'generate':
-        generate()
+        generate(n_workers)
     elif sys.argv[1] == 'reduce':
-        reduce()
+        reduce(n_workers)
     elif sys.argv[1] == 'count':
-        count()
+        count(n_workers)
     else:
         raise ValueError('Invalid argument: must be one of generate, reduce or count')
 except IndexError:
