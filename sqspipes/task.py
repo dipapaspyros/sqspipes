@@ -122,11 +122,10 @@ class TaskRunner(object):
         self._result_mutex.acquire()
         self.results.append(task_output)
 
-        if (task_output is None and (not self.ignore_none)) or \
-                (isinstance(task_output, EmptyTaskOutput)):
-            # do nothing
-            pass
-        else:
+        if not(
+            ((task_output is None) and self.ignore_none) or
+            (isinstance(task_output, EmptyTaskOutput))
+        ):
             if (not self.final) and (type(task_output) != TaskError):
                 # if priority is a callable,
                 # it will be calculated from the extracted message
@@ -205,10 +204,6 @@ class TaskRunner(object):
 
                 self.results = []
                 self._result_mutex.release()
-
-            # if no messages were found, wait for a while
-            if in_queues and (not messages):
-                time.sleep(random.randint(10, 50) / 10.0)
 
     def run(self, args, priority=0, iterate=False):
         if iterate:
