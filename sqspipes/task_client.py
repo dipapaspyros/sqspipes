@@ -14,12 +14,13 @@ class TaskClient(object):
 
     SQS_FIFO_AVAILABLE_AT = ('us-west-2', 'us-east-2', )
 
-    def __init__(self, domain, aws_key, aws_secret, aws_region='us-west-2'):
+    def __init__(self, domain, aws_key, aws_secret, aws_region='us-west-2', ignore_none=True):
         """
         :param domain: A unique identifier of the application that uses the client (e.g my_awesome_app)
         :param aws_key: The AWS key that will be used. Should have full access to the SQS service.
         :param aws_secret: The AWS secret for the key used.
         :param aws_region: The AWS region. Defaults to us-west-2
+        :param ignore_none: If the task output is None, ignore it. Defaults to True.
         """
 
         if aws_region not in self.SQS_FIFO_AVAILABLE_AT:
@@ -36,6 +37,7 @@ class TaskClient(object):
             raise TaskClientError('`domain` field is required.')
 
         self.domain = domain
+        self.ignore_none = ignore_none
 
         # tasks are initially empty
         self.tasks = []
@@ -99,19 +101,22 @@ class TaskClient(object):
             task['name'] = task['method'].__name__
 
         return TaskRunner(
-            domain=self.domain,
             fn=task['method'],
-            name=task['name'],
             in_queue_names=in_queue_names,
-            workers=task.get('workers', 1),
-            aws_config={
-                'region': self.aws_region,
-                'key': self.aws_key,
-                'secret': self.aws_secret,
-            },
-            priorities=min(task.get('priorities', 0), 16),
-            interval=task.get('interval', 0),
-            final=final
+            config={
+                'domain': self.domain,
+                'name': task['name'],
+                'workers': task.get('workers', 1),
+                'aws_config': {
+                    'region': self.aws_region,
+                    'key': self.aws_key,
+                    'secret': self.aws_secret,
+                },
+                'priorities': min(task.get('priorities', 1), 16),
+                'interval': task.get('interval', 0),
+                'final': final,
+                'ignore_none': self.ignore_none,
+            }
         )
 
     def get_task_by_name(self, task_name):

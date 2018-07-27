@@ -11,22 +11,28 @@ from multiprocessing import Lock
 from .utils.task_pool import TaskPool, TaskError
 
 
+class EmptyTaskOutput(object):
+    pass
+
+
 class TaskRunner(object):
 
-    def __init__(self, fn, in_queue_names, domain, name, aws_config, workers=1, priorities=0, interval=0, final=False):
+    def __init__(self, fn, in_queue_names, config):
         self.fn = fn
-        self.domain = domain
-        self.name = name
         self.in_queue_names = in_queue_names
-        self.out_queues = []
-        self._out_queue_names = None
-        self.workers = workers
-        self.aws_config = aws_config
-        self.priority_levels = list(reversed(range(priorities + 1)))
-        self.final = final
-        self.interval = interval
         self.results = []
         self._result_mutex = Lock()
+        self.out_queues = []
+        self._out_queue_names = None
+
+        self.domain = config['domain']
+        self.name = config['name']
+        self.aws_config = config['aws_config']
+        self.workers = config.get('workers', 1)
+        self.priority_levels = list(reversed(range(config.get('priorities', 1))))
+        self.final = config.get('final', False)
+        self.interval = config.get('interval', 0)
+        self.ignore_none = config.get('ignore_none', True)
 
     def queue_name(self, priority):
         base_name = '%s-%s' % (self.domain, self.name)
@@ -116,19 +122,24 @@ class TaskRunner(object):
         self._result_mutex.acquire()
         self.results.append(task_output)
 
-        if (not self.final) and (type(task_output) != TaskError):
-            # also write to queues for next task to pick up
-            try:
-                self.out_queues[task_meta['priority']].send_message(
-                    MessageBody=json.dumps({
-                        'meta': task_meta,
-                        'value': task_output
-                    }),
-                    MessageDeduplicationId=str(uuid.uuid4()),
-                    MessageGroupId='-'
-                )
-            except:
-                traceback.print_exc()
+        if (task_output is None and (not self.ignore_none)) or \
+                (isinstance(task_output, EmptyTaskOutput)):
+            # do nothing
+            pass
+        else:
+            if (not self.final) and (type(task_output) != TaskError):
+                # also write to queues for next task to pick up
+                try:
+                    self.out_queues[task_meta['priority']].send_message(
+                        MessageBody=json.dumps({
+                            'meta': task_meta,
+                            'value': task_output
+                        }),
+                        MessageDeduplicationId=str(uuid.uuid4()),
+                        MessageGroupId='-'
+                    )
+                except:
+                    traceback.print_exc()
 
         self._result_mutex.release()
 
