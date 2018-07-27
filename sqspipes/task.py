@@ -128,6 +128,11 @@ class TaskRunner(object):
             pass
         else:
             if (not self.final) and (type(task_output) != TaskError):
+                # if priority is a callable,
+                # it will be calculated from the extracted message
+                if callable(task_meta.get('priority')):
+                    task_meta['priority'] = task_meta['priority'](task_output)
+
                 # also write to queues for next task to pick up
                 try:
                     self.out_queues[task_meta['priority']].send_message(
@@ -154,6 +159,9 @@ class TaskRunner(object):
             # receive messages
             messages = []
             for in_queue in in_queues:
+                if messages:
+                    break
+
                 messages += in_queue.receive_messages(MaxNumberOfMessages=min(self.workers, 10))
 
             if not in_queues:

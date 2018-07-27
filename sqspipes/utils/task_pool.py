@@ -50,12 +50,6 @@ class TaskPool:
 
         try:
             result = fn(*args)
-
-            # if priority is a callable,
-            # it will be calculated from the extracted message
-            if callable(meta.get('priority')):
-                meta['priority'] = meta['priority'](result)
-
         except Exception as e:
 
             traceback.print_exc()
