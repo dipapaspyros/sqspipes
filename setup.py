@@ -4,6 +4,8 @@ try:
     long_description = open('README.rst', encoding='utf8').read()
 except IOError:
     long_description = ''
+except TypeError:
+    long_description = ''
 
 
 setup(
@@ -11,7 +13,7 @@ setup(
     name="sqspipes",
 
     # Version number
-    version="0.1.1",
+    version="0.1.2",
 
     # Application author details
     author="Dimitris Papaspyros",
