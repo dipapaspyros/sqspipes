@@ -151,7 +151,7 @@ class TaskRunner(object):
                 })
 
                 # interval could either be a function or a number
-                if type(self.interval) == callable:
+                if callable(self.interval):
                     _interval = self.interval()
                 else:
                     _interval = self.interval
