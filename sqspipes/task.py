@@ -50,14 +50,17 @@ class TaskRunner(object):
         if self._out_queue_names is not None:
             return self._out_queue_names
 
-        self._out_queue_names = [self.queue_name(priority) for priority in self.priority_levels]
+        self._out_queue_names = [
+            self.queue_name(priority)
+            for priority in self.priority_levels
+        ]
 
         return self._out_queue_names
 
     def set_workers(self, workers):
         self.workers = workers
 
-    def in_queues(self):
+    def in_queues(self, min_priority=None, max_priority=None):
         # no input queues?
         if not self.in_queue_names:
             return []
@@ -69,7 +72,14 @@ class TaskRunner(object):
         while not retrieved:
             in_queues = []
             try:
-                for in_queue_name in self.in_queue_names:
+                for p, in_queue_name in enumerate(self.in_queue_names):
+                    priority = len(self.in_queue_names) - p - 1
+                    if not(
+                            (min_priority is None or priority >= min_priority) and
+                            (max_priority is None or priority <= max_priority)
+                    ):
+                        continue
+
                     in_queues.append(sqs.get_queue_by_name(QueueName=in_queue_name))
                     retrieved = True
             except ClientError as e:
@@ -147,12 +157,12 @@ class TaskRunner(object):
 
         self._result_mutex.release()
 
-    def _run(self, args, priority=0):
+    def _run(self, args, priority=0, min_priority=None, max_priority=None):
         # create the thread pool
         pool = TaskPool(self.workers, callback=self._on_task_finish)
 
         # get input queues
-        in_queues = self.in_queues()
+        in_queues = self.in_queues(min_priority, max_priority)
 
         while True:
             # receive messages
@@ -205,9 +215,10 @@ class TaskRunner(object):
                 self.results = []
                 self._result_mutex.release()
 
-    def run(self, args, priority=0, iterate=False):
+    def run(self, args, priority=0, iterate=False, min_priority=None, max_priority=None):
+        _call = self._run(args, priority=priority, min_priority=min_priority, max_priority=max_priority)
         if iterate:
-            return self._run(args, priority=priority)
+            return _call
 
         for _ in self._run(args, priority=priority):
             pass

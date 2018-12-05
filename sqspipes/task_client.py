@@ -168,7 +168,7 @@ class TaskClient(object):
                 QueueUrl=queue
             )
 
-    def run(self, task_name, args=None, priority=0, iterate=False, workers=None):
+    def run(self, task_name, args=None, priority=0, iterate=False, workers=None, min_priority=None, max_priority=None):
         """
         Executes a specific task from its configuration
         :param task_name: The name of the task to execute (or it's index for unnamed tasks)
@@ -195,4 +195,4 @@ class TaskClient(object):
         task.setup()
 
         # run the task
-        return task.run(args, priority=priority, iterate=iterate)
+        return task.run(args, priority=priority, iterate=iterate, min_priority=min_priority, max_priority=max_priority)
